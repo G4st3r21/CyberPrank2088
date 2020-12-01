@@ -1,0 +1,4 @@
+ЖАНРЫ: 
+    1)Roguelike
+    2)RPG
+    3)RolePlay
