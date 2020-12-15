@@ -10,7 +10,7 @@ pygame.display.set_caption('Герой двигается')
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('sprites\Police_run', name)
+    fullname = os.path.join('sprites\Космонавт', name)
 
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
@@ -32,18 +32,18 @@ rigth_sprites = pygame.sprite.Group()
 def_sprite = pygame.sprite.Group()
 right = []
 left = []
-for i in range(1, 6):
+for i in range(1, 8):
     right_sprite = pygame.sprite.Sprite()
-    image = load_image(f"Police_run_right{i}.png")
+    image = load_image(f"Космонавт_run_R{i}.png")
     right_sprite.image = pygame.transform.scale(image, (128, 128))
     right_sprite.rect = right_sprite.image.get_rect()
     right_sprite.rect.x = i * 10
     right_sprite.rect.y = 0
     right.append(right_sprite)
     rigth_sprites.add(right_sprite)
-for i in range(1, 6):
+for i in range(1, 8):
     left_sprite = pygame.sprite.Sprite()
-    image = load_image(f"Police_run_left{i}.png")
+    image = load_image(f"Космонавт_run_L{i}.png")
     left_sprite.image = pygame.transform.scale(image, (128, 128))
     left_sprite.rect = left_sprite.image.get_rect()
     left_sprite.rect.x = i * -10
@@ -53,7 +53,7 @@ for i in range(1, 6):
 
 
 d_sprite = pygame.sprite.Sprite()
-image = load_image("Police_stand_right.png")
+image = load_image("Космонавт_stand_R1.png")
 d_sprite.image = pygame.transform.scale(image, (128, 128))
 d_sprite.rect = d_sprite.image.get_rect()
 d_sprite.rect.x = 0
