@@ -10,7 +10,7 @@ pygame.display.set_caption('Герой двигается')
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('sprites\Космонавт', name)
+    fullname = os.path.join('sprites\Космонавт\Космонавт Бирюзовый', name)
 
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
