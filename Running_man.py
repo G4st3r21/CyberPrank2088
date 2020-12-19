@@ -6,7 +6,7 @@ from moviepy.editor import VideoFileClip
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('sprites\Космонавт', name)
+    fullname = os.path.join('sprites/', name)
 
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
@@ -23,10 +23,15 @@ def load_image(name, colorkey=None):
     return image
 
 
+FHD = 1920, 1080
+HD = 1080, 720
+HQ = 800, 600
+
 pygame.init()
-size = width, height = 1440, 720
+size = width, height = FHD
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('Player moving')
+pygame.display.set_icon(load_image('CyberPrank logo.png'))
 clock = pygame.time.Clock()
 FPS = 60
 
@@ -39,14 +44,20 @@ right_sprites = pygame.sprite.Group()
 stand_sprites_R = pygame.sprite.Group()
 stand_sprites_L = pygame.sprite.Group()
 
+
+Man_start_pos = (200, 200)
 Man_stand_R = AnimatedSprite(load_image(
-    'Космонавт Синий\Космонавт_stand_R_ALL.png'), 8, 1, 50, 50, stand_sprites_R)
+    'Космонавт/Космонавт Синий/Космонавт_stand_R_ALL.png'), 8, 1,
+    *Man_start_pos, stand_sprites_R)
 Man_stand_L = AnimatedSprite(load_image(
-    'Космонавт Синий\Космонавт_stand_L_ALL.png'), 8, 1, 50, 50, stand_sprites_L, 1)
+    'Космонавт/Космонавт Синий/Космонавт_stand_L_ALL.png'), 8, 1,
+    *Man_start_pos, stand_sprites_L, 1)
 Man_Go_R = AnimatedSprite(load_image(
-    'Космонавт Синий\Космонавт_run_R_ALL.png'), 8, 1, 50, 50, right_sprites)
+    'Космонавт/Космонавт Синий/Космонавт_run_R_ALL.png'), 8, 1,
+    *Man_start_pos, right_sprites)
 Man_Go_L = AnimatedSprite(load_image(
-    'Космонавт Синий\Космонавт_run_L_ALL.png'), 8, 1, 50, 50, left_sprites, 1)
+    'Космонавт/Космонавт Синий/Космонавт_run_L_ALL.png'), 8, 1,
+    *Man_start_pos, left_sprites, 1)
 All_sprites = [Man_stand_R, Man_stand_L, Man_Go_R, Man_Go_L]
 
 
