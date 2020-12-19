@@ -3,10 +3,12 @@ from moviepy.editor import VideoFileClip
 from Hero_class import Players_Hero
 
 
-Resolutions = {'FHD': (1920, 1080),
-               'HD+': (1440, 1080),
-               'HD': (1080, 720),
-               'HQ': (800, 600)}
+Resolutions = {
+    'FHD': (1920, 1080),
+    'HD+': (1440, 1080),
+    'HD': (1080, 720),
+    'HQ': (800, 600)
+}
 
 # ------------------------GAME INITIALIZATION------------------------- #
 
@@ -24,8 +26,8 @@ clip.set_fps(60)
 clip.preview()
 
 
-sound = pygame.mixer.music.load("static/audio/Hyper - Spoiler.mp3")
-pygame.mixer.music.play()
+# sound = pygame.mixer.music.load("static/audio/Hyper - Spoiler.mp3")
+# pygame.mixer.music.play()
 
 # ----------------------------GAME WORKING---------------------------- #
 

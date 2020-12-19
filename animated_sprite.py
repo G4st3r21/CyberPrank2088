@@ -5,7 +5,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, sheet, columns, rows, x, y, group, direct=0):
         super().__init__(group)
         self.frames = []
-        self.frame_count = [4, 4, 4, 4, 4, 4, 4, 4]
+        self.frame_count = [3, 3, 3, 3, 3, 3, 3, 3]
         self.cut_sheet(sheet, columns, rows)
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
