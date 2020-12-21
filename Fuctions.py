@@ -19,3 +19,10 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     return image
+
+
+def mouse_regarding_Hero(mouse, hero):
+    if mouse.sprite.rect.x > hero.Man_Go_R.rect.x:
+        hero.LastPose = 'R'
+    elif mouse.sprite.rect.x < hero.Man_Go_R.rect.x:
+        hero.LastPose = 'L'
