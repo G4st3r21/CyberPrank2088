@@ -75,7 +75,7 @@ class Players_Hero():
                 for _ in range(100):
                     for i in self.All_sprites:
                         i.rect.y -= 1
-            print(f'Осталось ХП: {self.HeatPoints}'
+            print(f'Осталось ХП: {self.HeatPoints}')
 
     def Stand(self):
         if self.LastPose == "L":
@@ -132,7 +132,7 @@ class Players_Hero():
         if self.LastPose == 'L':
             self.left_sprites.draw(self.screen)
             self.left_sprites.update()
-            self.LastPose='L'
+            self.LastPose = 'L'
         else:
             self.right_back_sprites.draw(self.screen)
             self.right_back_sprites.update()
@@ -155,7 +155,7 @@ class Players_Hero():
         if self.LastPose == 'L':
             self.left_sprites.draw(self.screen)
             self.left_sprites.update()
-            self.LastPose='L'
+            self.LastPose = 'L'
         else:
             self.right_back_sprites.draw(self.screen)
             self.right_back_sprites.update()
@@ -174,50 +174,50 @@ class Players_Hero():
     def Cycle_moving(self, size):
         if self.Man_Go_L.rect.x < 0 - 128:
             for i in self.All_sprites:
-                i.rect.x=size[0]
+                i.rect.x = size[0]
         if self.Man_Go_R.rect.x > size[0] + 128:
             for i in self.All_sprites:
-                i.rect.x=0
+                i.rect.x = 0
         if self.Man_Go_R.rect.y < 0 - 128:
             for i in self.All_sprites:
-                i.rect.y=size[1]
+                i.rect.y = size[1]
         if self.Man_Go_R.rect.y > size[1] + 128:
             for i in self.All_sprites:
-                i.rect.y=0
+                i.rect.y = 0
 
 
 class Zombie():
     def __init__(self, screen, start_pos=(500, 600)):
-        self.left_sprites=pygame.sprite.Group()
-        self.right_sprites=pygame.sprite.Group()
-        self.stand_sprites_R=pygame.sprite.Group()
-        self.stand_sprites_L=pygame.sprite.Group()
+        self.left_sprites = pygame.sprite.Group()
+        self.right_sprites = pygame.sprite.Group()
+        self.stand_sprites_R = pygame.sprite.Group()
+        self.stand_sprites_L = pygame.sprite.Group()
 
-        self.screen=screen
+        self.screen = screen
 
-        self.Speed=2
-        self.HeatPoints=20
-        self.Visibility=500
+        self.Speed = 2
+        self.HeatPoints = 20
+        self.Visibility = 500
 
-        Man_start_pos=start_pos
-        self.Man_stand_R=AnimatedSprite(load_image(
+        Man_start_pos = start_pos
+        self.Man_stand_R = AnimatedSprite(load_image(
             'Зомби/Зомби_stand_R_ALL.png'), 8, 1,
             *Man_start_pos, self.stand_sprites_R)
-        self.Man_stand_L=AnimatedSprite(load_image(
+        self.Man_stand_L = AnimatedSprite(load_image(
             'Зомби/Зомби_stand_L_ALL.png'), 8, 1,
             *Man_start_pos, self.stand_sprites_L, 1)
-        self.Man_Go_R=AnimatedSprite(load_image(
+        self.Man_Go_R = AnimatedSprite(load_image(
             'Зомби/Зомби_run_R_ALL.png'), 8, 1,
             *Man_start_pos, self.right_sprites)
-        self.Man_Go_L=AnimatedSprite(load_image(
+        self.Man_Go_L = AnimatedSprite(load_image(
             'Зомби/Зомби_run_L_ALL.png'), 8, 1,
             *Man_start_pos, self.left_sprites, 1)
-        self.All_sprites=[
+        self.All_sprites = [
             self.Man_stand_R, self.Man_stand_L,
             self.Man_Go_R, self.Man_Go_L
         ]
 
-        self.LastPose='R'
+        self.LastPose = 'R'
 
     def Stand(self):
         if self.LastPose == "L":
@@ -232,14 +232,14 @@ class Zombie():
             i.rect.x += self.Speed
         self.right_sprites.draw(self.screen)
         self.right_sprites.update()
-        self.LastPose='R'
+        self.LastPose = 'R'
 
     def Move_Left(self):
         for i in self.All_sprites:
             i.rect.x -= self.Speed
         self.left_sprites.draw(self.screen)
         self.left_sprites.update()
-        self.LastPose='L'
+        self.LastPose = 'L'
 
     def Move_Up(self):
         for i in self.All_sprites:
@@ -267,7 +267,7 @@ class Zombie():
             i.rect.x -= self.Speed
         self.left_sprites.draw(self.screen)
         self.left_sprites.update()
-        self.LastPose='L'
+        self.LastPose = 'L'
 
     def Move_UR(self):
         for i in self.All_sprites:
@@ -275,7 +275,7 @@ class Zombie():
             i.rect.x += self.Speed
         self.right_sprites.draw(self.screen)
         self.right_sprites.update()
-        self.LastPose='R'
+        self.LastPose = 'R'
 
     def Move_DL(self):
         for i in self.All_sprites:
@@ -283,7 +283,7 @@ class Zombie():
             i.rect.x -= self.Speed
         self.left_sprites.draw(self.screen)
         self.left_sprites.update()
-        self.LastPose='L'
+        self.LastPose = 'L'
 
     def Move_DR(self):
         for i in self.All_sprites:
@@ -291,18 +291,18 @@ class Zombie():
             i.rect.x += self.Speed
         self.right_sprites.draw(self.screen)
         self.right_sprites.update()
-        self.LastPose='R'
+        self.LastPose = 'R'
 
     def find_Hero(self, rect):
-        if rect.x < (self.Man_stand_R.rect.x - self.Visibility) or
-                rect.x > (self.Man_stand_R.rect.x + self.Visibility) or
-                rect.y < (self.Man_stand_R.rect.y - self.Visibility) or
+        if rect.x < (self.Man_stand_R.rect.x - self.Visibility) or \
+                rect.x > (self.Man_stand_R.rect.x + self.Visibility) or \
+                rect.y < (self.Man_stand_R.rect.y - self.Visibility) or \
                 rect.y > (self.Man_stand_R.rect.y + self.Visibility):
             self.Stand()
         else:
-            Zombie_rect=(self.Man_stand_R.rect.x,
+            Zombie_rect = (self.Man_stand_R.rect.x,
                            self.Man_stand_R.rect.y)
-            S=(rect.x - Zombie_rect[0], rect.y - Zombie_rect[1])
+            S = (rect.x - Zombie_rect[0], rect.y - Zombie_rect[1])
             if S[0] > 0 and S[1] > 0:
                 self.Move_DR()
             elif S[0] < 0 and S[1] < 0:
@@ -325,29 +325,29 @@ class Zombie():
 
 class Mouse():
     def __init__(self, ArrowType, ArrowType2, screen):
-        self.screen=screen
-        self.mouse_sprite1=pygame.sprite.Group()
-        self.mouse_sprite2=pygame.sprite.Group()
-        self.sprite=pygame.sprite.Sprite()
-        self.sprite2=pygame.sprite.Sprite()
-        self.sprite2.image=load_image(ArrowType2)
-        self.sprite.image=load_image(ArrowType)
-        self.sprite.rect=self.sprite.image.get_rect()
-        self.sprite2.rect=self.sprite2.image.get_rect()
+        self.screen = screen
+        self.mouse_sprite1 = pygame.sprite.Group()
+        self.mouse_sprite2 = pygame.sprite.Group()
+        self.sprite = pygame.sprite.Sprite()
+        self.sprite2 = pygame.sprite.Sprite()
+        self.sprite2.image = load_image(ArrowType2)
+        self.sprite.image = load_image(ArrowType)
+        self.sprite.rect = self.sprite.image.get_rect()
+        self.sprite2.rect = self.sprite2.image.get_rect()
         self.mouse_sprite1.add(self.sprite)
         self.mouse_sprite2.add(self.sprite2)
         pygame.mouse.set_visible(False)
-        self.sprite.rect.x=screen.get_size()[0] // 2
-        self.sprite.rect.y=screen.get_size()[1] // 2
-        self.sprite2.rect.x=screen.get_size()[0] // 2
-        self.sprite2.rect.y=screen.get_size()[1] // 2
+        self.sprite.rect.x = screen.get_size()[0] // 2
+        self.sprite.rect.y = screen.get_size()[1] // 2
+        self.sprite2.rect.x = screen.get_size()[0] // 2
+        self.sprite2.rect.y = screen.get_size()[1] // 2
 
     def DrawArrow(self, event):
-        pos=event
-        self.sprite.rect.x=pos[0]
-        self.sprite.rect.y=pos[1]
-        self.sprite2.rect.x=pos[0]
-        self.sprite2.rect.y=pos[1]
+        pos = event
+        self.sprite.rect.x = pos[0]
+        self.sprite.rect.y = pos[1]
+        self.sprite2.rect.x = pos[0]
+        self.sprite2.rect.y = pos[1]
 
     def mouse_spritesGet1(self):
         return self.mouse_sprite1

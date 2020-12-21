@@ -16,7 +16,7 @@ Resolutions = {
 # ------------------------GAME INITIALIZATION------------------------- #
 
 pygame.init()
-size = Resolutions['HQ']
+size = Resolutions['FHD']
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 FPS = 60
