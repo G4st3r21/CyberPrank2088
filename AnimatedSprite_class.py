@@ -1,9 +1,11 @@
 import pygame
+from Settings import FPS
 
 
 class AnimatedSprite(pygame.sprite.Sprite):
     def __init__(self, sheet, columns, rows, x, y, group, direct=0):
         super().__init__(group)
+        self.fps = FPS
         self.frames = []
         self.frame_count = [3, 3, 3, 3, 3, 3, 3, 3]
         self.cut_sheet(sheet, columns, rows)

@@ -3,36 +3,32 @@ import os
 import Fuctions
 from random import choice
 from moviepy.editor import VideoFileClip
-from Heroes_class import Players_Hero, Mouse, Zombie
-
-
-Resolutions = {
-    'FHD': (1920, 1080),
-    'HD+': (1440, 1080),
-    'HD': (1080, 720),
-    'HQ': (800, 600)
-}
+import Heroes_class as hc
+import Guns_class as gc
+import Settings as st
 
 # ------------------------GAME INITIALIZATION------------------------- #
 
 pygame.init()
-size = Resolutions['FHD']
+size = st.Change_Resolution()
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
-FPS = 60
 
-player = Players_Hero('Синий', screen)
+player = hc.Players_Hero('Синий', screen, 0, 1, 0)
+pistol = gc.Pistol(screen)
+bullet = gc.Bullet(screen, pistol.Pistol_R.rect.centerx,
+                   pistol.Pistol_R.rect.centery)
 
-zombie1 = Zombie(screen, (choice(range(300, 900)), choice(range(300, 900))))
-zombie2 = Zombie(screen, (choice(range(300, 900)), choice(range(300, 900))))
-zombie3 = Zombie(screen, (choice(range(300, 900)), choice(range(300, 900))))
+zombie1 = hc.Zombie(screen, (choice(range(300, 900)), choice(range(300, 900))))
+zombie2 = hc.Zombie(screen, (choice(range(300, 900)), choice(range(300, 900))))
+zombie3 = hc.Zombie(screen, (choice(range(300, 900)), choice(range(300, 900))))
 
-mouse = Mouse('Arrow6.png', 'Arrow6.1.png', screen)
+mouse = gc.Mouse('Arrows/Arrow6.png', 'Arrows/Arrow6.1.png', screen)
 
 # -----------------------------GAME INTRO----------------------------- #
 
 clip = VideoFileClip('static/video/Intro.mp4', target_resolution=size[::-1])
-clip.set_fps(60)
+clip.set_fps(st.FPS)
 clip.preview()
 
 # -----------------------------GAME MUSIC----------------------------- #
@@ -41,16 +37,22 @@ All_Gameplay_Music = [i for i in os.listdir('static/audio/fighting')]
 print(All_Gameplay_Music)
 sound = pygame.mixer.music.load('/'.join(['static/audio/fighting',
                                           choice(All_Gameplay_Music)]))
-pygame.mixer.music.play()
+# pygame.mixer.music.play()
+# pygame.mixer.music.set_volume(st.Volume)
 
 # ----------------------------GAME WORKING---------------------------- #
 
 running = True
 fire = 0
+Firing = 0
 Color = 'White'
 while running:
 
     screen.fill(pygame.Color(Color))
+    pygame.draw.rect(screen, (0, 0, 0), (0, 0, 10, 10), 0)
+    pygame.draw.rect(screen, (0, 0, 0), (1910, 1070, 10, 10), 0)
+    pygame.draw.rect(screen, (0, 0, 0), (1910, 0, 10, 10), 0)
+    pygame.draw.rect(screen, (0, 0, 0), (0, 1070, 10, 10), 0)
     pressed_key = pygame.key.get_pressed()
 
     for event in pygame.event.get():
@@ -60,13 +62,14 @@ while running:
             mouse.DrawArrow(event.pos)
         if event.type == pygame.MOUSEBUTTONDOWN:
             fire = 1
+            print('ЛКМ')
         elif event.type == pygame.MOUSEBUTTONUP:
             fire = 0
+            print('Отпустил')
 
     # ------------------------Moving-------------------------- #
 
     player.Cycle_moving(size)
-
     if pressed_key[pygame.K_w] and pressed_key[pygame.K_a]:
         player.Move_UL()
     elif pressed_key[pygame.K_w] and pressed_key[pygame.K_d]:
@@ -87,6 +90,13 @@ while running:
               pressed_key[pygame.K_a] or pressed_key[pygame.K_d]):
         player.Stand()
 
+    # ---------------------TESTING ZOMBIE------------------------ #
+
+    player.Damage(zombie1)
+    # zombie1.find_Hero(player.Man_stand_R.rect)
+    # zombie2.find_Hero(player.Man_stand_R.rect)
+    # zombie3.find_Hero(player.Man_stand_R.rect)
+
     # -------------TESTING SPRITES ABOVE COLORS--------------- #
 
     if pressed_key[pygame.K_1]:
@@ -100,25 +110,45 @@ while running:
     elif pressed_key[pygame.K_5]:
         Color = 'Green'
 
+    # -----------------------SETTINGS-------------------------- #
+
+    if pressed_key[pygame.K_z]:
+        st.Change_Volume(0.3)
+    elif pressed_key[pygame.K_x]:
+        st.Change_Volume(0.7)
+    elif pressed_key[pygame.K_c]:
+        size = st.Change_Resolution('HD+')
+        screen = pygame.display.set_mode(size)
+    elif pressed_key[pygame.K_v]:
+        size = st.Change_Resolution('HD')
+        screen = pygame.display.set_mode(size)
+    elif pressed_key[pygame.K_b]:  # BACK TO DEFAULT SETTINGS
+        st.Change_Volume()
+        size = st.Change_Resolution()
+        screen = pygame.display.set_mode(size)
+
     # ----------------------MOUSE ARROW------------------------- #
 
     if pygame.mouse.get_focused():
         if fire:
             mSprite = mouse.mouse_spritesGet2()
             mSprite.draw(screen)
+            Firing = pistol.Fire(player, (mouse.sprite.rect.centerx,
+                                          mouse.sprite.rect.centery))
+            lastcoords = (mouse.sprite.rect.centerx, mouse.sprite.rect.centery)
+            S = bullet.Count_Angel(pistol, lastcoords)
         else:
             mSprite = mouse.mouse_spritesGet1()
             mSprite.draw(screen)
+            pistol.drawPistol(player)
 
-    # ---------------------TESTING ZOMBIE------------------------ #
-
-    player.Damage(zombie1)
-    zombie1.find_Hero(player.Man_stand_R.rect)
-    # zombie2.find_Hero(player.Man_stand_R.rect)
-    # zombie3.find_Hero(player.Man_stand_R.rect)
+    if Firing and S:
+        bullet.DrawBullet()
+        fire = 0
 
     Fuctions.mouse_regarding_Hero(mouse, player)
     pygame.display.flip()
-    clock.tick(FPS)
+
+    clock.tick(st.FPS)
 
 pygame.quit()

@@ -22,7 +22,7 @@ def load_image(name, colorkey=None):
 
 
 def mouse_regarding_Hero(mouse, hero):
-    if mouse.sprite.rect.x > hero.Man_Go_R.rect.x:
+    if mouse.sprite.rect.centerx > hero.Man_Go_R.rect.centerx:
         hero.LastPose = 'R'
-    elif mouse.sprite.rect.x < hero.Man_Go_R.rect.x:
+    elif mouse.sprite.rect.centerx < hero.Man_Go_R.rect.centerx:
         hero.LastPose = 'L'
