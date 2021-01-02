@@ -11,7 +11,7 @@ Resolutions = {
 Resolution = 'FHD'
 ResolutionInt = Resolutions[Resolution]
 FPS = 60
-Volume = 0.01
+Volume = 0
 Language = 'Russian'
 
 

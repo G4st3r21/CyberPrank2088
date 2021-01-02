@@ -15,15 +15,13 @@ screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 
 player = hc.Players_Hero('Синий', screen, 0, 1, 0)
-pistol = gc.Pistol(screen)
-bullet = gc.Bullet(screen, pistol.Pistol_R.rect.centerx,
-                   pistol.Pistol_R.rect.centery)
 
 zombie1 = hc.Zombie(screen, (choice(range(300, 900)), choice(range(300, 900))))
 zombie2 = hc.Zombie(screen, (choice(range(300, 900)), choice(range(300, 900))))
 zombie3 = hc.Zombie(screen, (choice(range(300, 900)), choice(range(300, 900))))
 
 mouse = gc.Mouse('Arrows/Arrow6.png', 'Arrows/Arrow6.1.png', screen)
+pistol = gc.Pistol(screen, player, mouse)
 
 # -----------------------------GAME INTRO----------------------------- #
 
@@ -37,22 +35,20 @@ All_Gameplay_Music = [i for i in os.listdir('static/audio/fighting')]
 print(All_Gameplay_Music)
 sound = pygame.mixer.music.load('/'.join(['static/audio/fighting',
                                           choice(All_Gameplay_Music)]))
-# pygame.mixer.music.play()
-# pygame.mixer.music.set_volume(st.Volume)
+pygame.mixer.music.play()
+pygame.mixer.music.set_volume(st.Volume)
 
 # ----------------------------GAME WORKING---------------------------- #
 
 running = True
 fire = 0
 Firing = 0
+DEV_MODE = 1
 Color = 'White'
 while running:
 
     screen.fill(pygame.Color(Color))
-    pygame.draw.rect(screen, (0, 0, 0), (0, 0, 10, 10), 0)
-    pygame.draw.rect(screen, (0, 0, 0), (1910, 1070, 10, 10), 0)
-    pygame.draw.rect(screen, (0, 0, 0), (1910, 0, 10, 10), 0)
-    pygame.draw.rect(screen, (0, 0, 0), (0, 1070, 10, 10), 0)
+
     pressed_key = pygame.key.get_pressed()
 
     for event in pygame.event.get():
@@ -65,7 +61,17 @@ while running:
             print('ЛКМ')
         elif event.type == pygame.MOUSEBUTTONUP:
             fire = 0
+            Firing = 0
             print('Отпустил')
+
+    # -----------------------DEV MODE------------------------- #
+    if pressed_key[pygame.K_LSHIFT] and pressed_key[pygame.K_p] and DEV_MODE:
+        DEV_MODE = 0
+        print('DEV MODE OFF')
+    elif pressed_key[pygame.K_LSHIFT] and \
+            pressed_key[pygame.K_p] and not DEV_MODE:
+        DEV_MODE = 1
+        print('DEV MODE ON')
 
     # ------------------------Moving-------------------------- #
 
@@ -93,7 +99,7 @@ while running:
     # ---------------------TESTING ZOMBIE------------------------ #
 
     player.Damage(zombie1)
-    # zombie1.find_Hero(player.Man_stand_R.rect)
+    zombie1.find_Hero(player.Man_stand_R.rect)
     # zombie2.find_Hero(player.Man_stand_R.rect)
     # zombie3.find_Hero(player.Man_stand_R.rect)
 
@@ -127,24 +133,23 @@ while running:
         size = st.Change_Resolution()
         screen = pygame.display.set_mode(size)
 
-    # ----------------------MOUSE ARROW------------------------- #
+    # ----------------------MOUSE ARROW and FIRING------------------------- #
 
     if pygame.mouse.get_focused():
         if fire:
             mSprite = mouse.mouse_spritesGet2()
             mSprite.draw(screen)
-            Firing = pistol.Fire(player, (mouse.sprite.rect.centerx,
-                                          mouse.sprite.rect.centery))
-            lastcoords = (mouse.sprite.rect.centerx, mouse.sprite.rect.centery)
-            S = bullet.Count_Angel(pistol, lastcoords)
+            Firing = pistol.FireAnimOn()
         else:
             mSprite = mouse.mouse_spritesGet1()
             mSprite.draw(screen)
-            pistol.drawPistol(player)
+            pistol.drawPistol()
 
-    if Firing and S:
-        bullet.DrawBullet()
-        fire = 0
+    gc.bullets.draw(screen)
+    gc.bullets.update()
+
+    if DEV_MODE:
+        Fuctions.Dev_mode(screen, player, pistol, zombie1)
 
     Fuctions.mouse_regarding_Hero(mouse, player)
     pygame.display.flip()
