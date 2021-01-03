@@ -1,31 +1,37 @@
 import pygame
 from AnimatedSprite_class import AnimatedSprite
 from Fuctions import load_image
-import Settings as st
+from Guns_class import bullets
+from random import choice
 
 
 class Players_Hero():
-    def __init__(self, PlayersColor, screen, withoutGun, withPistol, withGun):
+    def __init__(self, PlayersColor, screen, withAR, withPistol, withShotgun):
         self.screen = screen
         self.HeatPoints = 100
 
         self.LastPose = 'R'
 
-        self.withoutGun = withoutGun
+        self.withAR = withAR
         self.withPistol = withPistol
-        self.withGun = withGun
-        if withoutGun:
+        self.withGun = withShotgun
+        if self.withAR:
             self.cur_sprites = 0
-        elif withPistol:
+            self.GunType = 'AR'
+        elif self.withPistol:
             self.cur_sprites = 1
-        elif withGun:
-            self.cur_sprites = 2
+            self.GunType = 'pistol'
+        elif self.withShotgun:
+            self.cur_sprites = 0
+            self.GunType = 'shootgun'
         self.SpritesINIT(PlayersColor)
 
-    def SpritesINIT(self, PlayersColor):
-        Man_start_pos = (200, 200)
+        self.IsAlive = True
 
-        # ----------------ПУСТЫЕ РУКИ------------------ #
+    def SpritesINIT(self, PlayersColor):
+        Man_start_pos = (200, 600)
+
+        # ----------------ASSAULT RIFLE------------------ #
         self.left_sprites = pygame.sprite.Group()
         self.right_sprites = pygame.sprite.Group()
         self.left_back_sprites = pygame.sprite.Group()
@@ -109,7 +115,36 @@ class Players_Hero():
             self.pistol_sprites_DRAW
         ]
 
+    def Change_gun(self, GunType, gun):
+        if GunType == 'pistol':
+            self.withPistol = 1
+            self.withAR = 0
+            self.withShotgun = 0
+            gun.Change_gun('pistol')
+        elif GunType == 'AR':
+            self.withPistol = 0
+            self.withAR = 1
+            self.withShotgun = 0
+            gun.Change_gun('AR')
+        elif GunType == 'shootgun':
+            self.withPistol = 0
+            self.withAR = 0
+            self.withShotgun = 1
+            gun.Change_gun('shootgun')
+
+        if self.withAR:
+            self.cur_sprites = 0
+            self.GunType = 'AR'
+        elif self.withPistol:
+            self.cur_sprites = 1
+            self.GunType = 'pistol'
+        elif self.withShotgun:
+            self.cur_sprites = 0
+            self.GunType = 'shootgun'
+
     def Stand(self):
+        if not self.IsAlive:
+            return 0
         if self.LastPose == "L":
             self.ALL_sprites_DRAW[self.cur_sprites][1].draw(self.screen)
             self.ALL_sprites_DRAW[self.cur_sprites][1].update()
@@ -118,6 +153,8 @@ class Players_Hero():
             self.ALL_sprites_DRAW[self.cur_sprites][0].update()
 
     def Move_Right(self):
+        if not self.IsAlive:
+            return 0
         for i in self.ALL_sprites_RECT:
             i.rect.x += 4
         if self.LastPose == 'R':
@@ -128,6 +165,8 @@ class Players_Hero():
             self.ALL_sprites_DRAW[self.cur_sprites][5].update()
 
     def Move_Left(self):
+        if not self.IsAlive:
+            return 0
         for i in self.ALL_sprites_RECT:
             i.rect.x -= 4
         if self.LastPose == 'L':
@@ -138,6 +177,8 @@ class Players_Hero():
             self.ALL_sprites_DRAW[self.cur_sprites][4].update()
 
     def Move_Up(self):
+        if not self.IsAlive:
+            return 0
         for i in self.ALL_sprites_RECT:
             i.rect.y -= 4
         if self.LastPose == 'L':
@@ -148,6 +189,8 @@ class Players_Hero():
             self.ALL_sprites_DRAW[self.cur_sprites][2].update()
 
     def Move_Down(self):
+        if not self.IsAlive:
+            return 0
         for i in self.ALL_sprites_RECT:
             i.rect.y += 4
         if self.LastPose == 'L':
@@ -158,6 +201,8 @@ class Players_Hero():
             self.ALL_sprites_DRAW[self.cur_sprites][2].update()
 
     def Move_UL(self):
+        if not self.IsAlive:
+            return 0
         for i in self.ALL_sprites_RECT:
             i.rect.y -= 3
             i.rect.x -= 3
@@ -169,6 +214,8 @@ class Players_Hero():
             self.ALL_sprites_DRAW[self.cur_sprites][4].update()
 
     def Move_UR(self):
+        if not self.IsAlive:
+            return 0
         for i in self.ALL_sprites_RECT:
             i.rect.y -= 3
             i.rect.x += 3
@@ -180,6 +227,8 @@ class Players_Hero():
             self.ALL_sprites_DRAW[self.cur_sprites][5].update()
 
     def Move_DL(self):
+        if not self.IsAlive:
+            return 0
         for i in self.ALL_sprites_RECT:
             i.rect.y += 3
             i.rect.x -= 3
@@ -191,6 +240,8 @@ class Players_Hero():
             self.ALL_sprites_DRAW[self.cur_sprites][4].update()
 
     def Move_DR(self):
+        if not self.IsAlive:
+            return 0
         for i in self.ALL_sprites_RECT:
             i.rect.y += 3
             i.rect.x += 3
@@ -202,6 +253,8 @@ class Players_Hero():
             self.ALL_sprites_DRAW[self.cur_sprites][5].update()
 
     def Cycle_moving(self, size):
+        if not self.IsAlive:
+            return 0
         if self.Man_Go_L.rect.x < 0 - 128:
             for i in self.ALL_sprites_RECT:
                 i.rect.x = size[0]
@@ -224,31 +277,32 @@ class Players_Hero():
         else:
             hit = False
         if hit:
+
             if zombie.Man_stand_R.rect.right > self.Man_stand_R.rect.left and \
                     zombie.Man_stand_R.rect.left < self.Man_stand_R.rect.left:
                 self.HeatPoints -= 15
-                for _ in range(100):
-                    for i in self.ALL_sprites_RECT:
-                        i.rect.x += 1
+                for i in self.ALL_sprites_RECT:
+                    i.rect.x += 100
             elif zombie.Man_stand_R.rect.left < self.Man_stand_R.rect.right and \
                     zombie.Man_stand_R.rect.right > self.Man_stand_R.rect.right:
                 self.HeatPoints -= 15
-                for _ in range(100):
-                    for i in self.ALL_sprites_RECT:
-                        i.rect.x -= 1
+                for i in self.ALL_sprites_RECT:
+                    i.rect.x -= 100
             elif zombie.Man_stand_R.rect.bottom > self.Man_stand_R.rect.top and \
                     zombie.Man_stand_R.rect.top < self.Man_stand_R.rect.top:
                 self.HeatPoints -= 15
-                for _ in range(100):
-                    for i in self.ALL_sprites_RECT:
-                        i.rect.y += 1
+                for i in self.ALL_sprites_RECT:
+                    i.rect.y += 100
             elif zombie.Man_stand_R.rect.top < self.Man_stand_R.rect.bottom and \
                     zombie.Man_stand_R.rect.bottom > self.Man_stand_R.rect.bottom:
                 self.HeatPoints -= 15
-                for _ in range(100):
-                    for i in self.ALL_sprites_RECT:
-                        i.rect.y -= 1
-            print(f'Осталось ХП: {self.HeatPoints}')
+                for i in self.ALL_sprites_RECT:
+                    i.rect.y -= 100
+            if self.HeatPoints <= 0:
+                self.IsAlive = False
+                for i in self.ALL_sprites_RECT:
+                    i.rect.y = -1000
+                    i.rect.x = -1000
 
 
 class Zombie():
@@ -260,9 +314,13 @@ class Zombie():
 
         self.screen = screen
 
-        self.Speed = 2
-        self.HeatPoints = 20
-        self.Visibility = 300
+        # Speed from 2 --> 5, HP from 20 --> 50, Visibility from 250 --> 500
+        self.Strench = choice(range(40, 100))
+
+        self.Speed = int(0.05 * self.Strench)
+        self.HeatPoints = int(0.5 * self.Strench)
+        self.zS = 80 / self.HeatPoints
+        self.Visibility = (6.25 * self.Strench)
 
         Man_start_pos = start_pos
         self.Man_stand_R = AnimatedSprite(load_image(
@@ -283,6 +341,7 @@ class Zombie():
         ]
 
         self.LastPose = 'R'
+        self.IsAlive = True
 
     def Stand(self):
         if self.LastPose == "L":
@@ -358,16 +417,21 @@ class Zombie():
         self.right_sprites.update()
         self.LastPose = 'R'
 
-    def find_Hero(self, rect):
-        if rect.x < (self.Man_stand_R.rect.x - self.Visibility) or \
-                rect.x > (self.Man_stand_R.rect.x + self.Visibility) or \
-                rect.y < (self.Man_stand_R.rect.y - self.Visibility) or \
-                rect.y > (self.Man_stand_R.rect.y + self.Visibility):
+    def find_Hero(self, player, gun):
+        if not self.IsAlive:
+            return 0
+
+        rect_x = player.Man_stand_R.rect.x
+        rect_y = player.Man_stand_R.rect.y
+        if rect_x < (self.Man_stand_R.rect.x - self.Visibility) or \
+                rect_x > (self.Man_stand_R.rect.x + self.Visibility) or \
+                rect_y < (self.Man_stand_R.rect.y - self.Visibility) or \
+                rect_y > (self.Man_stand_R.rect.y + self.Visibility):
             self.Stand()
         else:
             Zombie_rect = (self.Man_stand_R.rect.x,
                            self.Man_stand_R.rect.y)
-            S = (rect.x - Zombie_rect[0], rect.y - Zombie_rect[1])
+            S = (rect_x - Zombie_rect[0], rect_y - Zombie_rect[1])
             if S[0] > 0 and S[1] > 0:
                 self.Move_DR()
             elif S[0] < 0 and S[1] < 0:
@@ -386,3 +450,15 @@ class Zombie():
                 self.Move_Left()
             elif S[0] > 0 and S[1] == 0:
                 self.Move_Right()
+        self.Damage(gun)
+
+    def Damage(self, gun):
+        Hits = pygame.sprite.spritecollide(self.Man_stand_R, bullets, True)
+        if Hits:
+            self.HeatPoints -= gun.Damage
+            print('Попадание')
+        if self.HeatPoints <= 0:
+            self.IsAlive = False
+            for i in self.All_sprites:
+                i.rect.y = -1000
+                i.rect.x = -1000
