@@ -158,6 +158,9 @@ while running:
 
     # ----------------------MOUSE ARROW and FIRING------------------------- #
 
+    gc.bullets.draw(screen)
+    gc.bullets.update()
+
     if pygame.mouse.get_focused():
         if fire:
             Firing = gun.FireAnimOn()
@@ -167,9 +170,6 @@ while running:
             gun.drawPistol()
             mSprite = mouse.mouse_spritesGet1()
             mSprite.draw(screen)
-
-    gc.bullets.draw(screen)
-    gc.bullets.update()
 
     if DEV_MODE:
         Fuctions.Dev_mode(screen, player, gun, zombie1, st.FPS)

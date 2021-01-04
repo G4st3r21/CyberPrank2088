@@ -266,10 +266,10 @@ class Bullet(pygame.sprite.Sprite):
             else:
                 self.angle = angle
 
-            self.gox1 = math.cos(self.angle)
-            self.goy1 = math.sin(self.angle)
-            self.gox = self.gox1
-            self.goy = self.goy1
+        self.gox1 = math.cos(self.angle)
+        self.goy1 = math.sin(self.angle)
+        self.gox = self.gox1
+        self.goy = self.goy1
 
     def update(self):
         if self.rect.centerx == 0 and self.rect.centery == 0:
