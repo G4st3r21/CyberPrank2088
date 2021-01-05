@@ -25,19 +25,19 @@ class Mouse(pygame.sprite.Sprite):
         self.mouse_sprite1.add(self.sprite)
         self.mouse_sprite2.add(self.sprite2)
         pygame.mouse.set_visible(False)
-        self.sprite.rect.x = screen.get_size()[0] // 2
-        self.sprite.rect.y = screen.get_size()[1] // 2
-        self.sprite2.rect.x = screen.get_size()[0] // 2
-        self.sprite2.rect.y = screen.get_size()[1] // 2
+        self.sprite.rect.centerx = screen.get_size()[0] // 2
+        self.sprite.rect.centery = screen.get_size()[1] // 2
+        self.sprite2.rect.centerx = screen.get_size()[0] // 2
+        self.sprite2.rect.centery = screen.get_size()[1] // 2
 
     def DrawArrow(self, event):
         pos = event
         if pos[0] <= st.ResolutionInt[0] - 64 and \
                 pos[1] <= st.ResolutionInt[1] - 64:
-            self.sprite.rect.x = pos[0]
-            self.sprite.rect.y = pos[1]
-            self.sprite2.rect.x = pos[0]
-            self.sprite2.rect.y = pos[1]
+            self.sprite.rect.centerx = pos[0]
+            self.sprite.rect.centery = pos[1]
+            self.sprite2.rect.centerx = pos[0]
+            self.sprite2.rect.centery = pos[1]
 
     def mouse_spritesGet1(self):
         return self.mouse_sprite1
