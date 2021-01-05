@@ -19,7 +19,7 @@ class Main_menu():
         self.HerosInit()
         self.ButtonsInit()
         self.LogoInit()
-        self.MusicInit()  
+        self.MusicInit()
 
     def HerosInit(self):
         self.Heroes = pygame.sprite.Group()
@@ -47,7 +47,7 @@ class Main_menu():
     def MusicInit(self):
         All_menu_music = [i for i in os.listdir('static/audio/main menu')]
         music = choice(All_menu_music)
-        sound = pygame.mixer.music.load(
+        pygame.mixer.music.load(
             '/'.join(['static/audio/main menu', music]))
         pygame.mixer.music.play()
         pygame.mixer.music.set_volume(st.Volume)
@@ -180,4 +180,3 @@ class Button(pygame.sprite.Sprite):
         else:
             self.image = self.Button1
         self.screen.blit(self.text, (self.x, self.y))
-
