@@ -3,25 +3,26 @@ from AnimatedSprite_class import AnimatedSprite
 from Fuctions import load_image
 from Guns_class import bullets
 from random import choice
+import Detail_class as dc
+import Settings as st
 
 
 class Players_Hero():
-    def __init__(self, PlayersColor, screen, withAR, withPistol, withShotgun):
+    def __init__(self, PlayersColor, screen, guns):
         self.screen = screen
         self.HeatPoints = 100
+        self.Coins = 0
 
         self.LastPose = 'R'
 
-        self.withAR = withAR
-        self.withPistol = withPistol
-        self.withGun = withShotgun
-        if self.withAR:
+        self.guns = guns
+        if self.guns[1].InHands:
             self.cur_sprites = 0
             self.GunType = 'AR'
-        elif self.withPistol:
+        elif self.guns[0].InHands:
             self.cur_sprites = 1
             self.GunType = 'pistol'
-        elif self.withShotgun:
+        elif self.guns[2].InHands:
             self.cur_sprites = 0
             self.GunType = 'shootgun'
         self.SpritesINIT(PlayersColor)
@@ -117,28 +118,28 @@ class Players_Hero():
 
     def Change_gun(self, GunType, gun):
         if GunType == 'pistol':
-            self.withPistol = 1
-            self.withAR = 0
-            self.withShotgun = 0
+            self.guns[0].InHands = True
+            self.guns[1].InHands = False
+            self.guns[2].InHands = False
             gun.Change_gun('pistol')
         elif GunType == 'AR':
-            self.withPistol = 0
-            self.withAR = 1
-            self.withShotgun = 0
+            self.guns[0].InHands = False
+            self.guns[1].InHands = True
+            self.guns[2].InHands = False
             gun.Change_gun('AR')
         elif GunType == 'shootgun':
-            self.withPistol = 0
-            self.withAR = 0
-            self.withShotgun = 1
+            self.guns[0].InHands = False
+            self.guns[1].InHands = False
+            self.guns[2].InHands = True
             gun.Change_gun('shootgun')
 
-        if self.withAR:
+        if self.guns[1].InHands:
             self.cur_sprites = 0
             self.GunType = 'AR'
-        elif self.withPistol:
+        elif self.guns[0].InHands:
             self.cur_sprites = 1
             self.GunType = 'pistol'
-        elif self.withShotgun:
+        elif self.guns[2].InHands:
             self.cur_sprites = 0
             self.GunType = 'shootgun'
 
@@ -304,6 +305,40 @@ class Players_Hero():
                     i.rect.y = -1000
                     i.rect.x = -1000
 
+    def TakeDetail(self, group, group2, group3, group4, guns):
+        takingCoin = pygame.sprite.spritecollide(
+            self.Man_stand_R, group, True)
+        takingXP = pygame.sprite.spritecollide(
+            self.Man_stand_R, group2, True)
+        takingBullets = pygame.sprite.spritecollide(
+            self.Man_stand_R, group3, True)
+        takingGuns = pygame.sprite.spritecollide(
+            self.Man_stand_R, group4, True)
+        if takingCoin:
+            for i in takingCoin:
+                self.Coins += 1
+        elif takingXP:
+            for i in takingXP:
+                self.HeatPoints += i.xp
+                if self.HeatPoints >= 100:
+                    self.HeatPoints = 100
+        elif takingBullets:
+            for i in takingBullets:
+                if guns[0].InHands:
+                    if guns[1].Ammo < guns[2].Ammo:
+                        guns[1].Ammo += 5
+                    else:
+                        guns[2].Ammo += 5
+                elif guns[1].InHands:
+                    guns[1].Ammo += 5
+                elif guns[2].InHands:
+                    guns[2].Ammo += 5
+        elif takingGuns:
+            for i in takingGuns:
+                for j in guns:
+                    if j.type == i.GunType:
+                        j.Taken = True
+
 
 class Zombie():
     def __init__(self, screen, start_pos=(500, 600)):
@@ -315,7 +350,13 @@ class Zombie():
         self.screen = screen
 
         # Speed from 2 --> 5, HP from 20 --> 50, Visibility from 250 --> 500
-        self.Strench = choice(range(40, 100))
+        self.Difficulty = st.Difficulty
+        if self.Difficulty == 1:
+            self.Strench = choice(range(40, 60))
+        elif self.Difficulty == 2:
+            self.Strench = choice(range(60, 80))
+        elif self.Difficulty == 3:
+            self.Strench = choice(range(80, 101))
 
         self.Speed = int(0.05 * self.Strench)
         self.HeatPoints = int(0.5 * self.Strench)
@@ -456,9 +497,20 @@ class Zombie():
         Hits = pygame.sprite.spritecollide(self.Man_stand_R, bullets, True)
         if Hits:
             self.HeatPoints -= gun.Damage
-            print('Попадание')
         if self.HeatPoints <= 0:
             self.IsAlive = False
+            counts = [choice(range(4)), choice(range(4)), choice(range(4))]
+
+            for i in range(counts[0]):
+                dc.Coin(self.Man_stand_R.rect.centerx,
+                        self.Man_stand_R.rect.centery)
+            for i in range(counts[1]):
+                dc.XP(self.Man_stand_R.rect.centerx,
+                      self.Man_stand_R.rect.centery)
+            for i in range(counts[2]):
+                dc.Bullets(self.Man_stand_R.rect.centerx,
+                           self.Man_stand_R.rect.centery)
+
             for i in self.All_sprites:
                 i.rect.y = -1000
                 i.rect.x = -1000

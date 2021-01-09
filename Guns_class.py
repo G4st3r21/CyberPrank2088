@@ -47,26 +47,25 @@ class Mouse(pygame.sprite.Sprite):
 
 
 class Gun(Mouse):
-    def __init__(self, screen, player, mouse, typeofgun):
-        self.player = player
+    def __init__(self, screen, mouse, typeofgun, ammo=10):
         self.mouse = mouse
         self.type = typeofgun
+        self.Taken = False
+        self.InHands = False
+        self.Ammo = ammo
         if self.type == 'pistol':
-            self.Damage = 5
+            self.Damage = 3
             self.frames = [23]
-            self.Ammo = 10
             self.gunR = 'guns/pistol/Default_pistol_R.png'
             self.gunL = 'guns/pistol/Default_pistol_L.png'
         elif self.type == 'AR':
             self.Damage = 10
             self.frames = [11, 23]
-            self.Ammo = 50
             self.gunR = 'guns/assault_rifle/assault_rifle_R.png'
             self.gunL = 'guns/assault_rifle/assault_rifle_L.png'
         elif self.type == 'shootgun':
             self.Damage = 7
             self.frames = [23]
-            self.Ammo = 20
             self.gunR = 'guns/shootgun/shootguns_R.png'
             self.gunL = 'guns/shootgun/shootguns_L.png'
 
@@ -102,19 +101,16 @@ class Gun(Mouse):
         if self.type == 'pistol':
             self.Damage = 5
             self.frames = [23]
-            self.Ammo = 10
             self.gunR = 'guns/pistol/Default_pistol_R.png'
             self.gunL = 'guns/pistol/Default_pistol_L.png'
         elif self.type == 'AR':
             self.Damage = 10
             self.frames = [11, 23]
-            self.Ammo = 50
             self.gunR = 'guns/assault_rifle/assault_rifle_R.png'
             self.gunL = 'guns/assault_rifle/assault_rifle_L.png'
         elif self.type == 'shootgun':
             self.Damage = 7
             self.frames = [23]
-            self.Ammo = 20
             self.gunR = 'guns/shootgun/shootguns_R.png'
             self.gunL = 'guns/shootgun/shootguns_L.png'
 
@@ -139,9 +135,9 @@ class Gun(Mouse):
                 self.gunL), (512, 64)), 8, 1,
                 *self.pos, self.left_sprites, 1)
 
-    def setPos(self):
-        self.LastPose = self.player.LastPose
-        self.pos = (self.player.Man_Go_R.rect.x, self.player.Man_Go_R.rect.y)
+    def setPos(self, player):
+        self.LastPose = player.LastPose
+        self.pos = (player.Man_Go_R.rect.x, player.Man_Go_R.rect.y)
         if self.type == 'pistol':
             self.Pistol_R.rect.x = self.pos[0] + 48
             self.Pistol_R.rect.y = self.pos[1] + 44
@@ -160,8 +156,8 @@ class Gun(Mouse):
         self.Pistol_rect = (self.Pistol_L.rect.centerx,
                             self.Pistol_L.rect.centery)
 
-    def drawPistol(self):
-        self.setPos()
+    def drawPistol(self, player):
+        self.setPos(player)
         self.Pistol_R.cur_frame = 0
         self.Pistol_L.cur_frame = -1
         if self.LastPose == 'R':
@@ -169,8 +165,8 @@ class Gun(Mouse):
         else:
             self.left_sprites.draw(self.screen)
 
-    def FireAnimOn(self):
-        self.setPos()
+    def FireAnimOn(self, player):
+        self.setPos(player)
         if self.LastPose == 'R':
             self.right_sprites.draw(self.screen)
             self.right_sprites.update()
@@ -291,4 +287,4 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
     def kill(self):
-        self.rect.centerx, self.rect.centery = 0, 0
+        self.rect.centerx, self.rect.centery = -1000, -1000

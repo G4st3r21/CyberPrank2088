@@ -11,6 +11,7 @@ class HUD():
         self.GunType = GunType
         self.Ammo = Ammo
         self.Hud_Head()
+        self.Coins()
         self.Hud_Gun()
 
     def update(self, HeatPoints, GunType, Ammo=0):
@@ -29,6 +30,20 @@ class HUD():
         self.Head.rect.x = 210
         self.Head.rect.y = 125
         self.Group.add(self.Head)
+
+    def Coins(self):
+        self.coin = pygame.sprite.Sprite()
+        self.coin.image = pygame.transform.scale(
+            Fuctions.load_image('details/coin.png'), (38, 42))
+        self.coin.rect = self.coin.image.get_rect()
+        self.coin.rect.x = 345
+        self.coin.rect.y = 185
+        self.Group.add(self.coin)
+
+    def Coins_cnt(self, player):
+        font = pygame.font.Font('static/fonts/19888.ttf', 20)
+        cnt = font.render(str(player.Coins), True, (0, 0, 0))
+        self.screen.blit(cnt, (380, 227))
 
     def Hud_HeatPoints(self):
         pygame.draw.rect(self.screen, pygame.Color(

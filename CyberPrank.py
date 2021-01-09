@@ -9,9 +9,7 @@ size = st.Change_Resolution()
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 
-Game_play = MC.Main(screen, clock, size)
 Game_menu = MMC.Main_menu(screen, clock)
-
 # ----------------------Menu---------------------- #
 
 Playing = Game_menu.Menu_cycle()
@@ -19,6 +17,9 @@ if not Playing:
     exit()
 
 # ----------------------Game---------------------- #
+
+Game_play = MC.Main(screen, clock, size, Playing)
+
 
 Game_play.MusicInit()
 Game_play.Game_cycle()
