@@ -224,6 +224,20 @@ class Main():
         self.Firing = 0
         self.DEV_MODE = 1
         self.Color = 'White'
+        FT = Fuctions.load_image('Main_menu\Fast_Tutorial.png')
+        while self.running:
+            self.screen.blit(FT, (-100, -100))
+
+            self.pressed_key = pygame.key.get_pressed()
+            if self.pressed_key[pygame.K_SPACE]:
+                self.running = False
+
+            pygame.display.flip()
+
+            self.clock.tick(st.FPS)
+
+        self.running = True
+
         while self.running:
 
             self.screen.fill(pygame.Color(self.Color))
