@@ -73,7 +73,7 @@ class Main_menu():
         self.Play_buttons = pygame.sprite.Group()
         self.game_1 = Button(self.screen, 'НЕДОСТУПНО',
                              self.Play_buttons, 500, 500, (320, 64))
-        self.game_2 = Button(self.screen, 'РЕЖИМ ОТЛАДКИ',
+        self.game_2 = Button(self.screen, 'ОБЫЧНЫЙ',
                              self.Play_buttons, 1100, 500, (320, 64))
 
     def Menu_cycle(self):
