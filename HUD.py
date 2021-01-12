@@ -85,7 +85,11 @@ class HUD():
 
     def Gun_Ammo(self):
         font = pygame.font.Font('static/fonts/19888.ttf', 20)
-        Ammo = font.render(str(self.Ammo), True, (0, 0, 0))
+        if self.Ammo < 0:
+            Ammo = pygame.transform.rotate(
+                font.render(str(8), True, (0, 0, 0)), 90)
+        else:
+            Ammo = font.render(str(self.Ammo), True, (0, 0, 0))
         self.screen.blit(Ammo, (255, 312))
 
     def Zombies_HeatPoints(self, zombie):

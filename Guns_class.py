@@ -188,7 +188,7 @@ class Gun(Mouse):
                 else:
                     bullet = Bullet(self.Pistol_rect, goal, 'R', bullets)
                     bullet.Count_Angle()
-                if not bullet.angle or bullet.angle > 1 or bullet.angle < -1:
+                if not bullet.angle:
                     bullet.kill()
                     return 0
                 bullets.add(bullet)

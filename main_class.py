@@ -2,7 +2,7 @@ import pygame
 import os
 import Fuctions
 from random import choice
-from moviepy.editor import VideoFileClip
+from levels import Level, Level_sprites
 import HUD
 import Heroes_class as hc
 import Guns_class as gc
@@ -15,6 +15,7 @@ class Main():
         self.screen = screen
         self.clock = clock
         self.size = size
+        self.RoomHad = [0]
 
         self.mouse = gc.Mouse('Arrows/Arrow1.png',
                               'Arrows/Arrow1.1.png', self.screen)
@@ -25,14 +26,15 @@ class Main():
         self.spawnedAR = False
         self.spawnedSG = False
         self.kills = 0
+        self.Last_Move = 0
         if self.Type == 'Debug':
             self.Debug_modeINIT()
 
-    def IntroInit(self):
-        clip = VideoFileClip('static/video/Intro.mp4',
-                             target_resolution=self.size[::-1])
-        clip.set_fps(st.FPS)
-        clip.preview()
+    # def IntroInit(self):
+    #     clip = VideoFileClip('static/video/Intro.mp4',
+    #                          target_resolution=self.size[::-1])
+    #     clip.set_fps(st.FPS)
+    #     clip.preview()
 
     def MusicInit(self):
         self.All_Gameplay_Music = [
@@ -68,35 +70,64 @@ class Main():
         for i in self.guns:
             if i.InHands:
                 if self.DEV_MODE:
-                    Fuctions.Dev_mode(self.screen, self.player,
-                                      i, self.zombie1, st.FPS)
+                    for zombie in self.zombies:
+                        Fuctions.Dev_mode(self.screen, self.player,
+                                          i, zombie, st.FPS)
 
     def Player_moving(self):
-        self.player.Cycle_moving(self.size)
+        Walls = pygame.sprite.collide_mask(
+            self.player.Man_stand_R, self.level)
         self.player.TakeDetail(dc.Coins, dc.Experience,
                                dc.Bullets_group, dc.Guns, self.guns)
-        if self.pressed_key[pygame.K_w] and self.pressed_key[pygame.K_a]:
+        if Walls or not (
+            self.pressed_key[pygame.K_w] or
+            self.pressed_key[pygame.K_s] or
+            self.pressed_key[pygame.K_a] or
+            self.pressed_key[pygame.K_d]
+        ):
+            self.player.Stand()
+
+            if Walls and self.Last_Move == 'UL':
+                self.player.Move_DR()
+            elif Walls and self.Last_Move == 'DR':
+                self.player.Move_UL()
+            elif Walls and self.Last_Move == 'UR':
+                self.player.Move_DL()
+            elif Walls and self.Last_Move == 'DL':
+                self.player.Move_UR()
+            elif Walls and self.Last_Move == 'UP':
+                self.player.Move_Down()
+            elif Walls and self.Last_Move == 'DOWN':
+                self.player.Move_Up()
+            elif Walls and self.Last_Move == 'RIGHT':
+                self.player.Move_Left()
+            elif Walls and self.Last_Move == 'LEFT':
+                self.player.Move_Right()
+
+        elif self.pressed_key[pygame.K_w] and self.pressed_key[pygame.K_a]:
             self.player.Move_UL()
+            self.Last_Move = 'UL'
         elif self.pressed_key[pygame.K_w] and self.pressed_key[pygame.K_d]:
             self.player.Move_UR()
+            self.Last_Move = 'UR'
         elif self.pressed_key[pygame.K_s] and self.pressed_key[pygame.K_a]:
             self.player.Move_DL()
+            self.Last_Move = 'DL'
         elif self.pressed_key[pygame.K_s] and self.pressed_key[pygame.K_d]:
             self.player.Move_DR()
+            self.Last_Move = 'DR'
         elif self.pressed_key[pygame.K_w]:
             self.player.Move_Up()
+            self.Last_Move = 'UP'
         elif self.pressed_key[pygame.K_s]:
             self.player.Move_Down()
+            self.Last_Move = 'DOWN'
         elif self.pressed_key[pygame.K_a]:
             self.player.Move_Left()
+            self.Last_Move = 'LEFT'
         elif self.pressed_key[pygame.K_d]:
             self.player.Move_Right()
-        elif not (self.pressed_key[pygame.K_w] or
-                  self.pressed_key[pygame.K_s] or
-                  self.pressed_key[pygame.K_a] or
-                  self.pressed_key[pygame.K_d]
-                  ):
-            self.player.Stand()
+            self.Last_Move = 'RIGHT'
 
     def Guns(self):
         if self.pressed_key[pygame.K_1]:
@@ -119,11 +150,12 @@ class Main():
             self.hud.Hud_Gun()
 
     def ZombieTest(self):
-        self.player.Damage(self.zombie1)
-        for i in self.guns:
-            if i.InHands:
-                self.zombie1.find_Hero(self.player, i)
-        self.hud.Zombies_HeatPoints(self.zombie1)
+        for zombie in self.zombies:
+            self.player.Damage(zombie)
+            for i in self.guns:
+                if i.InHands:
+                    zombie.find_Hero(self.player, i)
+            self.hud.Zombies_HeatPoints(zombie)
 
     def ColorTest(self):
         if self.pressed_key[pygame.K_4]:
@@ -179,8 +211,9 @@ class Main():
                 mSprite.draw(self.screen)
 
     def Debug_modeINIT(self):
-        self.zombie1 = hc.Zombie(
-            self.screen, (choice(range(300, 1700)), choice(range(300, 900))))
+        self.zombies = []
+
+        self.level_cam()
 
         self.pistol = gc.Gun(self.screen, self.mouse, 'pistol', -1)
         self.AR = gc.Gun(self.screen, self.mouse, 'AR', 50)
@@ -200,22 +233,30 @@ class Main():
     def Debug_mode(self):
         self.Guns()
         self.ZombieTest()
-        if self.zombie1.HeatPoints <= 0:
-            self.zombie1 = hc.Zombie(self.screen, (choice(
-                range(300, 1700)), choice(range(300, 900))))
-            self.kills += 1
+        if self.player.RoomIn not in self.RoomHad:
+            for i in range(2):
+                zombie = hc.Zombie(self.screen, (choice(
+                    range(500, 1100)),
+                    choice(range(400, 800))))
+                self.zombies.append(zombie)
+            self.RoomHad.append(self.player.RoomIn)
+        for zombie in self.zombies:
+            if zombie.HeatPoints <= 0:
+                self.kills += 1
         if self.kills >= 1 and not self.spawnedAR:
             dc.Floating_weapons('AR', choice(
-                range(300, 1700)), choice(range(300, 900)))
+                range(500, 1100)), choice(range(400, 800)))
             self.spawnedAR = True
         if self.kills >= 5 and not self.spawnedSG:
             dc.Floating_weapons('shootgun', choice(
-                range(300, 1700)), choice(range(300, 900)))
+                range(500, 1100)), choice(range(400, 800)))
             self.spawnedSG = True
         self.ColorTest()
         self.SettingTest()
         self.HUD()
-        self.Dev_mode()
+
+    def level_cam(self):
+        self.level = Level()
 
     def Game_cycle(self):
         self.pressed_key = pygame.key.get_pressed()
@@ -227,6 +268,8 @@ class Main():
         while self.running:
 
             self.screen.fill(pygame.Color(self.Color))
+            Level_sprites.draw(self.screen)
+            Level_sprites.update(self.player, self.size)
             self.pressed_key = pygame.key.get_pressed()
 
             gc.bullets.draw(self.screen)

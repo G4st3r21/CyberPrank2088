@@ -172,7 +172,7 @@ class Main_menu():
 
             pygame.display.flip()
 
-            self.clock.tick(120)
+            self.clock.tick(75)
 
 
 class FloatingHeroes(pygame.sprite.Sprite):
