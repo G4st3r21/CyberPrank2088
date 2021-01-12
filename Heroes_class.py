@@ -382,6 +382,14 @@ class Zombie():
         self.Man_Go_L = AnimatedSprite(load_image(
             'Зомби/Зомби_run_L_ALL.png'), 8, 1,
             *Man_start_pos, self.left_sprites, 1)
+
+        self.All_sprites_DRAW = [
+            self.left_sprites,
+            self.right_sprites,
+            self.stand_sprites_R,
+            self.stand_sprites_L
+        ]
+
         self.All_sprites = [
             self.Man_stand_R, self.Man_stand_L,
             self.Man_Go_R, self.Man_Go_L

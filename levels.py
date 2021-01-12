@@ -38,22 +38,34 @@ class Level(pygame.sprite.Sprite):
         # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
 
-    def update(self, player, size):
+    def update(self, player, zombies, size):
         pos = player.Cycle_moving(size)
         if pos == -1:
             return False
         elif pos == 0:
             return False
         elif pos[0] == 1:
+            for zombie in zombies:
+                for sprite in zombie.All_sprites:
+                    sprite.rect.x += 1024
             self.rect.x += 1024
             player.RoomIn += 1
         elif pos[1] == 1:
+            for zombie in zombies:
+                for sprite in zombie.All_sprites:
+                    sprite.rect.x -= 1024
             self.rect.x -= 1024
             player.RoomIn += 1
         elif pos[2] == 1:
+            for zombie in zombies:
+                for sprite in zombie.All_sprites:
+                    sprite.rect.y += 1024
             self.rect.y += 1024
             player.RoomIn += 1
         elif pos[3] == 1:
+            for zombie in zombies:
+                for sprite in zombie.All_sprites:
+                    sprite.rect.y -= 1024
             self.rect.y -= 1024
             player.RoomIn += 1
 

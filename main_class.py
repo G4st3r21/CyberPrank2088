@@ -269,7 +269,7 @@ class Main():
 
             self.screen.fill(pygame.Color(self.Color))
             Level_sprites.draw(self.screen)
-            Level_sprites.update(self.player, self.size)
+            Level_sprites.update(self.player, self.zombies, self.size)
             self.pressed_key = pygame.key.get_pressed()
 
             gc.bullets.draw(self.screen)
