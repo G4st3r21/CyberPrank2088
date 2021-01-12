@@ -14,6 +14,7 @@ class Players_Hero():
         self.Coins = 0
 
         self.LastPose = 'R'
+        self.RoomIn = 0
 
         self.guns = guns
         if self.guns[1].InHands:
@@ -30,7 +31,7 @@ class Players_Hero():
         self.IsAlive = True
 
     def SpritesINIT(self, PlayersColor):
-        Man_start_pos = (200, 600)
+        Man_start_pos = (500, 500)
 
         # ----------------ASSAULT RIFLE------------------ #
         self.left_sprites = pygame.sprite.Group()
@@ -256,18 +257,23 @@ class Players_Hero():
     def Cycle_moving(self, size):
         if not self.IsAlive:
             return 0
-        if self.Man_Go_L.rect.x < 0 - 128:
+        if self.Man_Go_L.rect.x < 0 + 200 + 358 - 128:
             for i in self.ALL_sprites_RECT:
-                i.rect.x = size[0]
-        if self.Man_Go_R.rect.x > size[0] + 128:
+                i.rect.x = size[0] - 200 - 358
+            return [1, 0, 0, 0]
+        if self.Man_Go_R.rect.x > size[0] - 358 + 128:
             for i in self.ALL_sprites_RECT:
-                i.rect.x = 0
+                i.rect.x = 0 + 200 + 358
+            return [0, 1, 0, 0]
         if self.Man_Go_R.rect.y < 0 - 128:
             for i in self.ALL_sprites_RECT:
                 i.rect.y = size[1]
+            return [0, 0, 1, 0]
         if self.Man_Go_R.rect.y > size[1] + 128:
             for i in self.ALL_sprites_RECT:
                 i.rect.y = 0
+            return [0, 0, 0, 1]
+        return -1
 
     def Damage(self, zombie):
         if zombie.Man_stand_R.rect.right > self.Man_stand_R.rect.left and \
