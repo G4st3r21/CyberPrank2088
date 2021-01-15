@@ -267,7 +267,11 @@ class Bullet(pygame.sprite.Sprite):
         self.gox = self.gox1
         self.goy = self.goy1
 
-    def update(self):
+    def update(self, level):
+        Walls = pygame.sprite.collide_mask(self, level)
+        if Walls:
+            self.kill()
+            return None
         if self.rect.centerx == 0 and self.rect.centery == 0:
             return None
         if int(self.goy1) > 1 or int(self.goy1) < -1:

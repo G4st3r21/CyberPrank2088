@@ -154,7 +154,7 @@ class Main():
             self.player.Damage(zombie)
             for i in self.guns:
                 if i.InHands:
-                    zombie.find_Hero(self.player, i)
+                    zombie.find_Hero(self.player, self.level, i)
             self.hud.Zombies_HeatPoints(zombie)
 
     def ColorTest(self):
@@ -240,20 +240,27 @@ class Main():
                     choice(range(400, 800))))
                 self.zombies.append(zombie)
             self.RoomHad.append(self.player.RoomIn)
+
         for zombie in self.zombies:
             if zombie.HeatPoints <= 0:
                 self.kills += 1
+
         if self.kills >= 1 and not self.spawnedAR:
             dc.Floating_weapons('AR', choice(
                 range(500, 1100)), choice(range(400, 800)))
             self.spawnedAR = True
+
         if self.kills >= 5 and not self.spawnedSG:
             dc.Floating_weapons('shootgun', choice(
                 range(500, 1100)), choice(range(400, 800)))
             self.spawnedSG = True
+
         self.ColorTest()
         self.SettingTest()
         self.HUD()
+        if self.hud.Hud_HeatPoints():
+            End_Menu = Fuctions.load_image('Main_menu/Game_Over.png')
+            self.screen.blit(End_Menu, (-30, 0))
 
     def level_cam(self):
         self.level = Level()
@@ -273,7 +280,7 @@ class Main():
             self.pressed_key = pygame.key.get_pressed()
 
             gc.bullets.draw(self.screen)
-            gc.bullets.update()
+            gc.bullets.update(self.level)
             dc.Experience.draw(self.screen)
             dc.Experience.update()
             dc.Coins.draw(self.screen)

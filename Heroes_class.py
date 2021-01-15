@@ -289,22 +289,22 @@ class Players_Hero():
                     zombie.Man_stand_R.rect.left < self.Man_stand_R.rect.left:
                 self.HeatPoints -= 15
                 for i in self.ALL_sprites_RECT:
-                    i.rect.x += 100
+                    i.rect.x += 20
             elif zombie.Man_stand_R.rect.left < self.Man_stand_R.rect.right and \
                     zombie.Man_stand_R.rect.right > self.Man_stand_R.rect.right:
                 self.HeatPoints -= 15
                 for i in self.ALL_sprites_RECT:
-                    i.rect.x -= 100
+                    i.rect.x -= 20
             elif zombie.Man_stand_R.rect.bottom > self.Man_stand_R.rect.top and \
                     zombie.Man_stand_R.rect.top < self.Man_stand_R.rect.top:
                 self.HeatPoints -= 15
                 for i in self.ALL_sprites_RECT:
-                    i.rect.y += 100
+                    i.rect.y += 20
             elif zombie.Man_stand_R.rect.top < self.Man_stand_R.rect.bottom and \
                     zombie.Man_stand_R.rect.bottom > self.Man_stand_R.rect.bottom:
                 self.HeatPoints -= 15
                 for i in self.ALL_sprites_RECT:
-                    i.rect.y -= 100
+                    i.rect.y -= 20
             if self.HeatPoints <= 0:
                 self.IsAlive = False
                 for i in self.ALL_sprites_RECT:
@@ -352,6 +352,8 @@ class Zombie():
         self.right_sprites = pygame.sprite.Group()
         self.stand_sprites_R = pygame.sprite.Group()
         self.stand_sprites_L = pygame.sprite.Group()
+        self.bite_sprites_R = pygame.sprite.Group()
+        self.bite_sprites_L = pygame.sprite.Group()
 
         self.screen = screen
 
@@ -382,21 +384,32 @@ class Zombie():
         self.Man_Go_L = AnimatedSprite(load_image(
             'Зомби/Зомби_run_L_ALL.png'), 8, 1,
             *Man_start_pos, self.left_sprites, 1)
+        self.Man_Bite_R = AnimatedSprite(load_image(
+            'Зомби/Зомби_bite_R_ALL.png'), 8, 1,
+            *Man_start_pos, self.bite_sprites_R, 1)
+        self.Man_Bite_L = AnimatedSprite(load_image(
+            'Зомби/Зомби_bite_L_ALL.png'), 8, 1,
+            *Man_start_pos, self.bite_sprites_L, 1)
 
         self.All_sprites_DRAW = [
             self.left_sprites,
             self.right_sprites,
             self.stand_sprites_R,
-            self.stand_sprites_L
+            self.stand_sprites_L,
+            self.bite_sprites_L,
+            self.bite_sprites_R
         ]
 
         self.All_sprites = [
             self.Man_stand_R, self.Man_stand_L,
-            self.Man_Go_R, self.Man_Go_L
+            self.Man_Go_R, self.Man_Go_L,
+            self.Man_Bite_R, self.Man_Bite_L
         ]
 
         self.LastPose = 'R'
         self.IsAlive = True
+        self.Last_Move = ''
+        self.IsBiting = False
 
     def Stand(self):
         if self.LastPose == "L":
@@ -405,6 +418,18 @@ class Zombie():
         else:
             self.stand_sprites_R.draw(self.screen)
             self.stand_sprites_R.update()
+
+    def Bite(self):
+        if self.IsBiting:
+            if self.LastPose == 'R':
+                self.bite_sprites_R.draw(self.screen)
+                self.bite_sprites_R.update()
+            elif self.LastPose == 'L':
+                self.bite_sprites_L.draw(self.screen)
+                self.bite_sprites_L.update()
+            if self.Man_Bite_R.cur_frame == 24 or\
+                    self.Man_Bite_L.cur_frame == 24:
+                self.IsBiting = False
 
     def Move_Right(self):
         for i in self.All_sprites:
@@ -472,39 +497,70 @@ class Zombie():
         self.right_sprites.update()
         self.LastPose = 'R'
 
-    def find_Hero(self, player, gun):
+    def find_Hero(self, player, level, gun):
         if not self.IsAlive:
             return 0
 
-        rect_x = player.Man_stand_R.rect.x
-        rect_y = player.Man_stand_R.rect.y
-        if rect_x < (self.Man_stand_R.rect.x - self.Visibility) or \
-                rect_x > (self.Man_stand_R.rect.x + self.Visibility) or \
-                rect_y < (self.Man_stand_R.rect.y - self.Visibility) or \
-                rect_y > (self.Man_stand_R.rect.y + self.Visibility):
-            self.Stand()
-        else:
-            Zombie_rect = (self.Man_stand_R.rect.x,
-                           self.Man_stand_R.rect.y)
-            S = (rect_x - Zombie_rect[0], rect_y - Zombie_rect[1])
-            if S[0] > 0 and S[1] > 0:
+        Walls = pygame.sprite.collide_mask(self.Man_stand_R, level)
+
+        if Walls:
+            if self.Last_Move == 'UL':
                 self.Move_DR()
-            elif S[0] < 0 and S[1] < 0:
+            elif self.Last_Move == 'DR':
                 self.Move_UL()
-            elif S[0] > 0 and S[1] < 0:
-                self.Move_UR()
-            elif S[0] < 0 and S[1] > 0:
+            elif self.Last_Move == 'UR':
                 self.Move_DL()
-            elif S == (0, 0):
-                self.Stand()
-            elif S[0] == 0 and S[1] > 0:
+            elif self.Last_Move == 'DL':
+                self.Move_UR()
+            elif self.Last_Move == 'UP':
                 self.Move_Down()
-            elif S[0] == 0 and S[1] < 0:
+            elif self.Last_Move == 'DOWN':
                 self.Move_Up()
-            elif S[0] < 0 and S[1] == 0:
+            elif self.Last_Move == 'RIGHT':
                 self.Move_Left()
-            elif S[0] > 0 and S[1] == 0:
+            elif self.Last_Move == 'LEFT':
                 self.Move_Right()
+        else:
+
+            rect_x = player.Man_stand_R.rect.x
+            rect_y = player.Man_stand_R.rect.y
+            if rect_x < (self.Man_stand_R.rect.x - self.Visibility) or \
+                    rect_x > (self.Man_stand_R.rect.x + self.Visibility) or \
+                    rect_y < (self.Man_stand_R.rect.y - self.Visibility) or \
+                    rect_y > (self.Man_stand_R.rect.y + self.Visibility):
+                self.Stand()
+            else:
+                Zombie_rect = (self.Man_stand_R.rect.x,
+                               self.Man_stand_R.rect.y)
+                S = (rect_x - Zombie_rect[0], rect_y - Zombie_rect[1])
+                if S[0] in range(-90, 90) and S[1] in range(-20, 20):
+                    print('Удары', S)
+                    self.IsBiting = True
+                    self.Bite()
+                elif S[0] > 0 and S[1] > 0:
+                    self.Move_DR()
+                    self.Last_Move = 'DR'
+                elif S[0] < 0 and S[1] < 0:
+                    self.Move_UL()
+                    self.Last_Move = 'UL'
+                elif S[0] > 0 and S[1] < 0:
+                    self.Move_UR()
+                    self.Last_Move = 'UR'
+                elif S[0] < 0 and S[1] > 0:
+                    self.Move_DL()
+                    self.Last_Move = 'DL'
+                elif S[0] == 0 and S[1] > 0:
+                    self.Move_Down()
+                    self.Last_Move = 'DOWN'
+                elif S[0] == 0 and S[1] < 0:
+                    self.Move_Up()
+                    self.Last_Move = 'UP'
+                elif S[0] < 0 and S[1] == 0:
+                    self.Move_Left()
+                    self.Last_Move = 'LEFT'
+                elif S[0] > 0 and S[1] == 0:
+                    self.Move_Right()
+                    self.Last_Move = 'RIGHT'
         self.Damage(gun)
 
     def Damage(self, gun):

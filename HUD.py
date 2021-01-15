@@ -53,6 +53,8 @@ class HUD():
         font = pygame.font.Font('static/fonts/19888.ttf', 40)
         HP = font.render(f'{self.HP}/100', True, (0, 0, 0))
         self.screen.blit(HP, (460, 133))
+        if self.HP == 0:
+            return 1
 
     def Hud_Gun(self):
         if self.GunType == 'pistol':
